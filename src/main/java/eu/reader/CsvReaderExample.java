@@ -4,6 +4,7 @@ import com.csvreader.CsvReader;
 import eu.reader.model.Product;
 
 import java.io.IOException;
+import java.io.UncheckedIOException;
 import java.math.BigDecimal;
 import java.util.function.Function;
 import java.util.stream.Stream;
@@ -37,7 +38,7 @@ public class CsvReaderExample {
             return product;
 
         } catch (IOException e) {
-            throw new RuntimeException("Exception occurred while reading line " + products.getRawRecord());
+            throw new UncheckedIOException(e);
         }
     };
 

@@ -22,6 +22,12 @@ public class RecordsCSVReader<T> {
         this.recordReader = recordReader;
     }
 
+    private static Runnable asUncheckedRunnable(CsvReader c) {
+        return () -> {
+            c.close();
+        };
+    }
+
     public Stream<T> products() throws IOException {
         CsvReader csvReader = new CsvReader(filename);
 
@@ -40,7 +46,6 @@ public class RecordsCSVReader<T> {
 
                         if (!csvReader.readRecord()) {
                             nextRecord = null;
-                            csvReader.close();
                             return false;
                         }
 
@@ -64,8 +69,10 @@ public class RecordsCSVReader<T> {
                 }
             }
         };
-        return StreamSupport.stream(Spliterators.spliteratorUnknownSize(
-                iter, Spliterator.ORDERED | Spliterator.NONNULL), false);
+        return StreamSupport
+                .stream(Spliterators.spliteratorUnknownSize(iter,
+                        Spliterator.ORDERED | Spliterator.NONNULL), false)
+                .onClose(asUncheckedRunnable(csvReader));
     }
 
 }
